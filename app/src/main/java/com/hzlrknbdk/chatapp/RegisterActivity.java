@@ -24,10 +24,10 @@ import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    MaterialEditText username, password, email;
-    Button register;
-    FirebaseAuth auth;
-    DatabaseReference reference;
+    private MaterialEditText username, password, email;
+    private Button register;
+    private FirebaseAuth auth;
+    private DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +42,8 @@ public class RegisterActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
         email = findViewById(R.id.email);
+        register = findViewById(R.id.btn_register);
+
         auth = FirebaseAuth.getInstance();
 
         register.setOnClickListener(new View.OnClickListener() {
@@ -50,6 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String txt_username = username.getText().toString();
                 String txt_email = email.getText().toString();
                 String txt_password = password.getText().toString();
+
                 if (TextUtils.isEmpty(txt_username) || TextUtils.isEmpty(txt_email) || TextUtils.isEmpty(txt_password)) {
                     Toast.makeText(RegisterActivity.this, "All field are required", Toast.LENGTH_SHORT).show();
 
@@ -65,17 +68,19 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    public void register(final String username, final String password, String email) {
+    public void register(final String username, String password, String email) {
 
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             FirebaseUser firebaseUser = auth.getCurrentUser();
                             assert firebaseUser != null;
                             String userid = firebaseUser.getUid();
-                            reference = FirebaseDatabase.getInstance().getReference().child("Users").child(userid);
+
+                            reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
                             HashMap<String, String> hashMap = new HashMap<>();
                             hashMap.put("id", userid);
                             hashMap.put("username", username);
